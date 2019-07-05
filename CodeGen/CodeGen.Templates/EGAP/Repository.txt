@@ -1,0 +1,65 @@
+using EGap.Core;
+using EGap.DataAccess.Common;
+using EGap.Models.Article;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EGap.DataAccess.Repositories
+{
+    public interface I{{_Name}}Repository : IBaseRepository<{{_Name}}>
+    {
+        SearchModel<EGapEntity<{{_Name}}>> Search(int? currentPage, int? pageSize, {{_Name}} query = null);
+
+        EGapEntity<{{_Name}}> Retrieve(int id);
+    }
+    public class {{_Name}}Repository : BaseRepository<{{_Name}}>, I{{_Name}}Repository
+    {
+        private readonly ILocalizedPropertyRepository _localizedPropertyRepository;
+        public {{_Name}}Repository(EGapEntities context, ILocalizedPropertyRepository localizedPropertyRepository)
+            : base(context)
+        {
+            _localizedPropertyRepository = localizedPropertyRepository;
+        }
+
+        public SearchModel<EGapEntity<{{_Name}}>> Search(int? currentPage, int? pageSize, {{_Name}} searchQuery = null)
+        {
+            var result = new SearchModel<EGapEntity<{{_Name}}>>();
+
+            var allLocalizeProperties = _localizedPropertyRepository.GetQueryable().Where(x => x.LocaleKeyGroup == LocaleKeyGroupContants.{{_Name}});
+            var query = this.GetQueryable().Where(x => !x.IsDeleted).GroupJoin(allLocalizeProperties, x => x.{{_Name}}Id, y => y.EntityId, (x, y) => new EGapEntity<{{_Name}}>()
+            {
+                Entity = x,
+                LocalizedProperties = y
+            });
+            if (searchQuery != null)
+            {
+                #properties
+                $
+					query.{{_PropName}} = entity.{{_PropName}};
+                $
+            }
+            result.TotalRecords = query.Count();
+            query = query.OrderByDescending(x => x.Entity.UpdatedDate);
+            if (currentPage.HasValue && pageSize.HasValue)
+            {
+                query = query.Skip((currentPage.Value - 1) * pageSize.Value).Take(pageSize.Value);
+            }
+            result.ResultSearch = query.ToList();
+            return result;
+        }
+
+        public EGapEntity<{{_Name}}> Retrieve(int id)
+        {
+            var entity = GetById(id);
+            var languages = _localizedPropertyRepository.GetQueryable().Where(x => x.LocaleKeyGroup == LocaleKeyGroupContants.{{_Name}} && x.EntityId == id);
+            return new EGapEntity<{{_Name}}>()
+            {
+                LocalizedProperties = languages,
+                Entity = entity
+            };
+        }
+    }
+}
