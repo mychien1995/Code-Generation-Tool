@@ -1,0 +1,25 @@
+#region Product
+public static {{_Name}}Model ToModel(this {{_Name}} entity)
+{
+    if (entity == null) return null;
+    return new {{_Name}}Model()
+    {
+        #properties
+		$
+			{{_PropName}} = entity.{{_PropName}},
+		$
+    }
+}
+
+public static {{_Name}} ToEntity(this {{_Name}}Model model)
+{
+    if (model == null) return null;
+    return new {{_Name}}()
+    {
+        #properties
+		$
+			{{_PropName}} = model.{{_PropName}},
+		$
+    }
+}
+#endregion

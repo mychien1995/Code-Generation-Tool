@@ -33,13 +33,14 @@ namespace CodeGen.Engine.Translators
 
         private string ReplacePropertyLoop(string template, EntityType entityType)
         {
-            var indexOfLoops = template.AllIndexesOf(_PropertiesSyntax);
-            foreach(var loopIndex in indexOfLoops)
+            var loopIndex = template.IndexOf(_PropertiesSyntax);
+            while(loopIndex != -1)
             {
                 var contentString = template.GetPropertiesLoopContent(loopIndex);
                 var translatedContent = TranslateProperty(contentString, entityType);
                 template = template.RemoveUntil(loopIndex, '$', 2);
                 template = template.Insert(loopIndex, translatedContent);
+                loopIndex = template.IndexOf(_PropertiesSyntax);
             }
             return template;
 

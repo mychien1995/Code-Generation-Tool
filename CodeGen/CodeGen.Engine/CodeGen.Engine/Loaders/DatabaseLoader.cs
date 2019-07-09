@@ -39,7 +39,8 @@ namespace CodeGen.Engine.Loaders
         {
             var result = new EntityType();
             result.Name = tableName;
-            var query = $"SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tableName}';";
+            if (result.Name.EndsWith("s")) result.Name = result.Name.Substring(0, result.Name.Length - 1);
+             var query = $"SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tableName}';";
             SqlCommand command = new SqlCommand(query, connection);
             var reader = command.ExecuteReader();
             while (reader.Read())

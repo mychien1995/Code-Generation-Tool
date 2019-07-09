@@ -30,6 +30,7 @@ namespace CodeGen.View
             _databaseLoader = ServiceLocator.GetInstance<IDatabaseLoader>();
             _templateLoader = ServiceLocator.GetInstance<ITemplateLoader>();
             _templateTranslator = ServiceLocator.GetInstance<ITemplateTranslator>();
+            txtTemplate.Text = @"F:\Projects2\CodeGen\CodeGen\CodeGen.Templates\ProductMS";
         }
 
         private void btnLoadEntity_Click(object sender, EventArgs e)
